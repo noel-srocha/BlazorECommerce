@@ -2,11 +2,22 @@
 
 namespace BlazorECommerce.Server.Controllers;
 
-public class ProductController : Controller
+[Route("api/[controller]")]
+[ApiController]
+public class ProductController : ControllerBase
 {
-  // GET
-  public IActionResult Index()
-  {
-    return View();
-  }
+	private readonly IProductService _productService;
+
+    public ProductController(IProductService productService)
+    {
+	    _productService = productService;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProduct()
+    {
+	    var result = await _productService.GetProductsAsync();
+	      
+	    return Ok(result);
+    }
 }
