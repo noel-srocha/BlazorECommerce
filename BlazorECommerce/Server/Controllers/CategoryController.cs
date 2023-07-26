@@ -4,6 +4,8 @@ namespace BlazorECommerce.Server.Controllers;
 
 using Services.CategoryService;
 
+[Route("api/[controller]")]
+[ApiController]
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;

@@ -17,13 +17,20 @@
             </NavLink>
         </div>
         
-        @foreach (var category in CategoryService.Categories)
+        @if (CategoryService.Categories == null)
         {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@category.Url">
-                    @category.Name
-                </NavLink>
-            </div>
+            <span>Loading Categories...</span>
+        }
+        else
+        {
+            @foreach (var category in CategoryService.Categories)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@category.Url">
+                        @category.Name
+                    </NavLink>
+                </div>
+            }
         }
         
     </nav>

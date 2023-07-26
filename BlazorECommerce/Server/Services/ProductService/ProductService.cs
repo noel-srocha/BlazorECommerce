@@ -9,7 +9,7 @@ public class ProductService : IProductService
 		_context = context;
 	}
 
-	public async Task<ServiceResponse<List<Product>>> GetProductsAsync()
+	public async Task<ServiceResponse<List<Product>>> GetProducts()
 	{
 		var response = new ServiceResponse<List<Product>>
 		{
@@ -18,7 +18,7 @@ public class ProductService : IProductService
 
 		return response;
 	}
-	public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
+	public async Task<ServiceResponse<Product>> GetProduct(int productId)
 	{
 		var response = new ServiceResponse<Product>();
 		var product = await _context.Products.FindAsync(productId);
