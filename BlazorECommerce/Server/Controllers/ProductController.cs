@@ -36,4 +36,28 @@ public class ProductController : ControllerBase
 
 	    return Ok(result);
     }
+
+    [HttpGet("search/{searchText}")]
+    public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProducts(string searchText)
+    {
+	    var result = await _productService.SearchProducts(searchText);
+
+	    return Ok(result);
+    }
+
+    [HttpGet("searchsuggestions/{searchText}")]
+    public async Task<ActionResult<ServiceResponse<List<string>>>> GetProductSearchSuggestions(string searchText)
+    {
+	    var result = await _productService.GetProductSearchSuggestions(searchText);
+	    
+	    return Ok(result);
+    }
+    
+    [HttpGet("featured")]
+    public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturedProducts()
+    {
+	    var result = await _productService.GetFeaturedProducts();
+	    
+	    return Ok(result);
+    }
 }
