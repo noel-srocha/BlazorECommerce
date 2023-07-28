@@ -16,7 +16,7 @@ public class CartService : ICartService
     {
         var result = new ServiceResponse<List<CartProductResponseDTO>>
         {
-            Data = new List<CartProductResponseDTO>();
+            Data = new List<CartProductResponseDTO>(),
         };
 
         foreach (var cartItem in cartItems)
@@ -44,11 +44,13 @@ public class CartService : ICartService
                 Price = variant.Price,
                 ProductType = variant.ProductType.Name,
                 ProductTypeId = variant.ProductTypeId,
+                Quantity = cartItem.Quantity,
             };
             
             result.Data.Add(cartProduct);
 
-            return result;,
         }
+        
+        return result;
     }
 }
