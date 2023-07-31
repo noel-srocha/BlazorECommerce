@@ -15,12 +15,12 @@
         <ValidationMessage For="@(() => _user.EmailAddress)" />
     </div>
     <div class="mb-3">
-        <label for="password">Email</label>
+        <label for="password">Password</label>
         <InputText id="password" @bind-Value="_user.Password" class="form-control" type="password" />
         <ValidationMessage For="@(() => _user.Password)" />
     </div>
     <div class="mb-3">
-        <label for="confirm-password">Email</label>
+        <label for="confirm-password">Confirm Password</label>
         <InputText id="confirm-password" @bind-Value="_user.ConfirmPassword" class="form-control" type="password" />
         <ValidationMessage For="@(() => _user.ConfirmPassword)" />
     </div>

@@ -51,11 +51,8 @@ public class CartService : ICartService
     }
     public async Task RemoveProductFromCart(int productId, int productTypeId)
     {
-        var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+        var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart") ?? new List<CartItem>();
 
-        if (cart == null)
-            return;
-        
         var cartItem = cart.Find(x => x.ProductId == productId && x.ProductTypeId == productTypeId);
 
         if (cartItem != null)
@@ -68,11 +65,8 @@ public class CartService : ICartService
     }
     public async Task UpdateQuantity(CartProductResponseDTO product)
     {
-        var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+        var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart") ?? new List<CartItem>();
 
-        if (cart == null)
-            return;
-        
         var cartItem = cart.Find(x => x.ProductId == product.ProductId && x.ProductTypeId == product.ProductTypeId);
 
         if (cartItem != null)

@@ -4,6 +4,7 @@
 @inject IAuthService AuthService
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <h3>Login</h3>
 
@@ -15,7 +16,7 @@
         <ValidationMessage For="@(() => _user.EmailAddress)" />
     </div>
     <div class="mb-3">
-        <label for="password">Email</label>
+        <label for="password">Password</label>
         <InputText id="password" @bind-Value="_user.Password" class="form-control" type="password" />
         <ValidationMessage For="@(() => _user.Password)" />
     </div>
@@ -37,6 +38,7 @@
         {
             errorMessage = string.Empty;
             await LocalStorage.SetItemAsync("authToken", result.Data);
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
             NavigationManager.NavigateTo("");
         }
         else
