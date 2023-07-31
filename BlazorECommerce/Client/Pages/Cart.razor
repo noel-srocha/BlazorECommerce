@@ -22,16 +22,23 @@ else
                 <div class="name">
                     <h5><a href="/product/@product.ProductId">@product.Title</a></h5>
                     <span>@product.ProductType</span>
+                    <input
+                        class="form-control input-quantity"
+                        min="1"
+                        type="number" 
+                        value="@product.Quantity" 
+                        @onchange="@((ChangeEventArgs args) => UpdateQuantity(args, product))" 
+                    />
                     <button class="btn-delete" @onclick="@(() => RemoveProductFromCart(product.ProductId, product.ProductTypeId))">
                         Delete
                     </button>
                 </div>
-                <div class="cart-product-price">$@product.Price</div>
+                <div class="cart-product-price">$@(product.Price * product.Quantity)</div>
             </div>
         }
         
         <div class="cart-product-price">
-            Total (@cartProducts.Count): @cartProducts.Sum(product => product.Price)
+            Total (@cartProducts.Count): @cartProducts.Sum(product => product.Price * product.Quantity)
         </div>
     </div>
 }
@@ -65,5 +72,15 @@ else
         {
             cartProducts = await CartService.GetCartProducts();
         }
+    }
+
+    private async Task UpdateQuantity(ChangeEventArgs args, CartProductResponseDTO product)
+    {
+        product.Quantity = int.Parse(args.Value.ToString());
+
+        if (product.Quantity < 1)
+            product.Quantity = 1;
+
+        await CartService.UpdateQuantity(product);
     }
 }
