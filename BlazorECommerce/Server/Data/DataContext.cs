@@ -1,6 +1,6 @@
-﻿using BlazorECommerce.Shared;
+﻿namespace BlazorECommerce.Server.Data;
 
-namespace BlazorECommerce.Server.Data;
+using Shared.UAC;
 
 public class DataContext : DbContext
 {
@@ -260,4 +260,5 @@ public class DataContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductType> ProductTypes { get; set; }
     public DbSet<ProductVariant> ProductVariants { get; set; }
+    public DbSet<User> Users { get; set; }
 }
