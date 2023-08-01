@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @using BlazorECommerce.Shared.UAC
+@using Microsoft.AspNetCore.WebUtilities
 
 @inject IAuthService AuthService
 @inject ILocalStorageService LocalStorage
@@ -29,6 +30,16 @@
 @code {
     private UserLogin _user = new();
     private string errorMessage = string.Empty;
+    private string returnUrl = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var url))
+            returnUrl = url!;
+        
+    }
 
     private async Task HandleLogin()
     {
@@ -39,7 +50,7 @@
             errorMessage = string.Empty;
             await LocalStorage.SetItemAsync("authToken", result.Data);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo(returnUrl);
         }
         else
         {

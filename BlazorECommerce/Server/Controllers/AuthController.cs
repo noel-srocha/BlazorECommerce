@@ -2,7 +2,9 @@
 
 namespace BlazorECommerce.Server.Controllers;
 
+using Microsoft.AspNetCore.Authorization;
 using Shared.UAC;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -37,6 +39,18 @@ public class AuthController : ControllerBase
         
         if (!response.Success)
             return BadRequest();
+
+        return Ok(response);
+    }
+
+    [HttpPost("change-password"), Authorize]
+    public async Task<ActionResult<ServiceResponse<bool>>> ChangePassword([FromBody] string newPassword)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var response = await _authService.ChangePassword(int.Parse(userId!), newPassword);
+
+        if (!response.Success)
+            return BadRequest(response);
 
         return Ok(response);
     }
