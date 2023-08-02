@@ -1,7 +1,6 @@
 ﻿namespace BlazorECommerce.Server.Services.CartService;
 
 using Shared.DTOs;
-using System.Security.Claims;
 
 public class CartService : ICartService
 {
