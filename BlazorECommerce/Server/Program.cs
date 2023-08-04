@@ -6,7 +6,8 @@ global using BlazorECommerce.Server.Services.ProductService;
 global using BlazorECommerce.Server.Services.CategoryService;
 global using BlazorECommerce.Server.Services.CartService;
 global using BlazorECommerce.Server.Services.AuthService;
-using BlazorECommerce.Server.Services.OrderService;
+global using BlazorECommerce.Server.Services.OrderService;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

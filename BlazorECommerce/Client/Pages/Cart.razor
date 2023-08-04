@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @using BlazorECommerce.Shared.DTOs
 @inject ICartService CartService
+@inject IOrderService OrderService
 
 <PageTitle>Shopping Cart</PageTitle>
 
@@ -9,6 +10,10 @@
 @if (cartProducts == null || cartProducts.Count == 0)
 {
     <span>@message</span>
+}
+else if (orderPlaced)
+{
+    <span>Thank you for your order! You can check your orders <a href="orders">here</a>!</span>
 }
 else
 {
@@ -41,30 +46,34 @@ else
             Total (@cartProducts.Count): @cartProducts.Sum(product => product.Price * product.Quantity)
         </div>
     </div>
+    <button @onclick="PlaceOrder" class="btn alert-success float-end">Place Order</button>
 }
 
 @code {
 
     List<CartProductResponseDTO>? cartProducts;
+
     string message = "Loading Cart...";
+
+    bool orderPlaced = false;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadCart();
     }
-    
+
 
     private async Task RemoveProductFromCart(int productId, int productTypeId)
     {
         await CartService.RemoveProductFromCart(productId, productTypeId);
         await LoadCart();
     }
-    
+
     private async Task LoadCart()
     {
         await CartService.GetCartItemsCount();
         cartProducts = await CartService.GetCartProducts();
-        
+
         if (cartProducts == null || cartProducts.Count == 0)
             message = "Your cart is empty.";
         else
@@ -79,5 +88,12 @@ else
             product.Quantity = 1;
 
         await CartService.UpdateQuantity(product);
+    }
+
+    private async Task PlaceOrder()
+    {
+        await OrderService.PlaceOrder();
+        await CartService.GetCartItemsCount();
+        orderPlaced = true;
     }
 }

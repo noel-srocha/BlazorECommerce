@@ -31,11 +31,6 @@
 
     private string UserMenuCssClass => _showUserMenu ? "show-menu" : null;
 
-    private void ToggleUserMenu()
-    {
-        _showUserMenu = !_showUserMenu;
-    }
-
     private async Task HideUserMenu()
     {
         await Task.Delay(200);
@@ -48,5 +43,10 @@
         await CartService.GetCartItemsCount();
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("");
+    }
+    
+    private void ToggleUserMenu()
+    {
+        _showUserMenu = !_showUserMenu;
     }
 }

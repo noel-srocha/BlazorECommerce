@@ -10,12 +10,12 @@ public class AuthService : IAuthService
     {
         _http = http;
     }
-
-    public async Task<ServiceResponse<int>> Register(UserRegister request)
+    
+    public async Task<ServiceResponse<bool>> ChangePassword(UserChangePassword request)
     {
-        var result = await _http.PostAsJsonAsync("api/auth/register", request);
+        var result = await _http.PostAsJsonAsync("api/auth/change-password", request.Password);
 
-        return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+        return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
     }
     
     public async Task<ServiceResponse<string>> Login(UserLogin request)
@@ -24,11 +24,11 @@ public class AuthService : IAuthService
 
         return await result.Content.ReadFromJsonAsync<ServiceResponse<string>>();
     }
-    
-    public async Task<ServiceResponse<bool>> ChangePassword(UserChangePassword request)
-    {
-        var result = await _http.PostAsJsonAsync("api/auth/change-password", request.Password);
 
-        return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+    public async Task<ServiceResponse<int>> Register(UserRegister request)
+    {
+        var result = await _http.PostAsJsonAsync("api/auth/register", request);
+
+        return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
     }
 }

@@ -38,16 +38,16 @@
             await searchInput.FocusAsync();
     }
 
-    public void SearchProducts()
-    {
-        NavigationManager.NavigateTo($"search/{searchText}/1");
-    }
-
-    public async Task HandleSearch(KeyboardEventArgs args)
+    private async Task HandleSearch(KeyboardEventArgs args)
     {
         if (args.Key == null || args.Key.Equals("Enter"))
             SearchProducts();
         else if (searchText.Length > 1)
             suggestions = await ProductService.GetProductSearchSuggestions(searchText);
+    }
+    
+    private void SearchProducts()
+    {
+        NavigationManager.NavigateTo($"search/{searchText}/1");
     }
 }
