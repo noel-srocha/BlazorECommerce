@@ -1,5 +1,7 @@
 ﻿namespace BlazorECommerce.Server.Services.OrderService;
 
+using Shared.DTOs;
+
 public class OrderService : IOrderService
 {
     private readonly DataContext _context;
@@ -11,6 +13,33 @@ public class OrderService : IOrderService
         _context = context;
         _cartService = cartService;
         _httpContextAccessor = httpContextAccessor;
+    }
+    
+    public async Task<ServiceResponse<List<OrderOverviewResponseDTO>>> GetOrders()
+    {
+        var response = new ServiceResponse<List<OrderOverviewResponseDTO>>();
+        var orders = await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .Where(o => o.UserId == _authService.GetUserId())
+            .OrderDescending(o => o.OrderDate)
+            .ToListAsync();
+
+        var orderResponse = new List<OrderOverviewResponseDTO>();
+        orders.ForEach(o => orderResponse.Add(new OrderOverviewResponseDTO
+        {
+            Id = o.Id,
+            OrderDate = o.OrderDate,
+            TotalPrice = o.TotalPrice,
+            ProductName = o.OrderItems.Count > 1 ?
+                o.OrderItems.First().Product.Title + " and " + (o.OrderItems.Count - 1) + " more..." :
+                o.OrderItems.First().Product.Title,
+            ProductImgUrl = o.OrderItems.First().Product.ImageUrl,
+        }));
+
+        response.Data = orderResponse;
+        
+        return response;
     }
     
     public async Task<ServiceResponse<bool>> PlaceOrder()
@@ -42,6 +71,6 @@ public class OrderService : IOrderService
         return new ServiceResponse<bool> { Data = true };
 
     }
-    
+
     private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 }

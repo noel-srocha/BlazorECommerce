@@ -3,6 +3,7 @@
 namespace BlazorECommerce.Server.Controllers;
 
 using Services.OrderService;
+using Shared.DTOs;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -13,6 +14,14 @@ public class OrderController : ControllerBase
     public OrderController(IOrderService orderService)
     {
         _orderService = orderService;
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<List<OrderOverviewResponseDTO>>>> GetOrders()
+    {
+        var result = await _orderService.GetOrders();
+        
+        return Ok(result);
     }
 
     [HttpPost]
