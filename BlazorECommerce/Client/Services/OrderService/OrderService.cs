@@ -29,12 +29,16 @@ public class OrderService : IOrderService
         return result.Data;
     }
 
-    public async Task PlaceOrder()
+    public async Task<string> PlaceOrder()
     {
-        if (await IdentityIsAuthenticated())
-            await _http.PostAsync("api/order", null);
-        else
-            _navigationManager.NavigateTo("login");
+        if (!await IdentityIsAuthenticated())
+            return "login";
+        
+        var result = await _http.PostAsync("api/payment/checkout", null);
+        var url = await result.Content.ReadAsStringAsync();
+
+        return url;
+
     }
     
     private async Task<bool> IdentityIsAuthenticated()
