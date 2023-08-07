@@ -1,5 +1,6 @@
 ﻿namespace BlazorECommerce.Client.Services.OrderService;
 
+using BlazorECommerce.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 
 public class OrderService : IOrderService
@@ -14,7 +15,20 @@ public class OrderService : IOrderService
         _authStateProvider = authStateProvider;
         _navigationManager = navigationManager;
     }
-    
+
+    public async Task<List<OrderOverviewResponseDTO>> GetOrders()
+    {
+        var result = await _http.GetFromJsonAsync<ServiceResponse<List<OrderOverviewResponseDTO>>>("api/Order");
+
+        return result.Data;
+    }
+    public async Task<OrderDetailsResponseDTO> GetOrderDetails(int orderId)
+    {
+        var result = await _http.GetFromJsonAsync<ServiceResponse<OrderDetailsResponseDTO>>($"api/Order/{orderId}");
+
+        return result.Data;
+    }
+
     public async Task PlaceOrder()
     {
         if (await IdentityIsAuthenticated())

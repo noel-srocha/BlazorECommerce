@@ -23,7 +23,7 @@ public class OrderService : IOrderService
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Product)
             .Where(o => o.UserId == _authService.GetUserId())
-            .OrderDescending(o => o.OrderDate)
+            .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
 
         var orderResponse = new List<OrderOverviewResponseDTO>();
@@ -35,14 +35,54 @@ public class OrderService : IOrderService
             ProductName = o.OrderItems.Count > 1 ?
                 o.OrderItems.First().Product.Title + " and " + (o.OrderItems.Count - 1) + " more..." :
                 o.OrderItems.First().Product.Title,
-            ProductImgUrl = o.OrderItems.First().Product.ImageUrl,
+            ProductImgUrl = o.OrderItems.First().Product.ImgUrl,
         }));
 
         response.Data = orderResponse;
         
         return response;
     }
-    
+    public async Task<ServiceResponse<OrderDetailsResponseDTO>> GetOrderDetails(int orderId)
+    {
+        var response = new ServiceResponse<OrderDetailsResponseDTO>();
+        
+        var order = await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.ProductType)
+            .Where(o => o.UserId == _authService.GetUserId() && o.Id == orderId)
+            .OrderByDescending(o => o.OrderDate)
+            .FirstOrDefaultAsync();
+
+        if (order == null)
+        {
+            response.Success = false;
+            response.Message = "Order not found.";
+            return response;
+        }
+
+        var orderDetailsResponse = new OrderDetailsResponseDTO
+        {
+            OrderDate = order.OrderDate,
+            TotalPrice = order.TotalPrice,
+            Products = new List<OrderDetailsProductResponseDTO>(),
+        };
+
+        order.OrderItems.ForEach(oi => orderDetailsResponse.Products.Add(new OrderDetailsProductResponseDTO
+        {
+           ProductId = oi.ProductId,
+           ImgUrl = oi.Product.ImgUrl,
+           ProductType = oi.ProductType.Name,
+           Quantity = oi.Quantity,
+           Title = oi.Product.Title,
+           TotalPrice = oi.TotalPrice
+        }));
+
+        response.Data = orderDetailsResponse;
+        return response;
+    }
+
     public async Task<ServiceResponse<bool>> PlaceOrder()
     {
         var products = (await _cartService.GetDBCartProducts()).Data;

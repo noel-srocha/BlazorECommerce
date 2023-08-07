@@ -23,6 +23,14 @@ public class OrderController : ControllerBase
         
         return Ok(result);
     }
+    
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<ServiceResponse<OrderDetailsResponseDTO>>> GetOrderDetails(int orderId)
+    {
+        var result = await _orderService.GetOrderDetails(orderId);
+        
+        return Ok(result);
+    }
 
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<bool>>> PlaceOrder()
