@@ -37,7 +37,12 @@ public class AuthService : IAuthService
         
         return new ServiceResponse<bool> { Data = true, Message = "Password changed successfully." };
     }
-    
+    public async Task<User> GetUserByEmail(string emailAddress)
+    {
+        return await _context.Users.FirstOrDefaultAsync(x => x.EmailAddress.ToLower().Equals(emailAddress.ToLower()));
+    }
+    public string GetUserEmail() => _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Name);
+
     public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     
     public async Task<ServiceResponse<string>> Login(string emailAddress, string password)
