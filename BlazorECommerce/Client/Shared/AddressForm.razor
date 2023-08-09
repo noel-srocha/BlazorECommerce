@@ -1,0 +1,81 @@
+﻿@inject IAddressService AddressService
+
+@if (address == null)
+{
+    <span>
+        You haven't specified a delivery address, yet.
+        <button class="btn" @onclick="InitAddress">Add an address?</button>
+    </span>
+}
+else if (!editAddress)
+{
+    <p>
+        <span>@address.FirstName @address.LastName</span><br />
+        <span>@address.Street</span><br />
+        <span>@address.City, @address.State, @address.ZipCode</span><br />
+        <span>@address.Country</span><br />
+    </p>
+    <button class="btn btn-primary" @onclick="EditAddress">
+        Edit
+    </button>
+}
+else
+{
+    <EditForm Model="address" OnSubmit="SubmitAddress">
+        <div class="mb-3">
+            <label for="firstname">First Name</label>
+            <InputText class="form-control" id="firstname" placeholder="First Name" @bind-value="address.FirstName" />
+        </div>
+        <div class="mb-3">
+            <label for="lastname">Last Name</label>
+            <InputText class="form-control" id="lastname" placeholder="Last Name" @bind-value="address.LastName" />
+        </div>
+        <div class="mb-3">
+            <label for="street">Street</label>
+            <InputText class="form-control" id="street" placeholder="Street" @bind-value="address.Street" />
+        </div>
+        <div class="mb-3">
+            <label for="city">City</label>
+            <InputText class="form-control" id="city" placeholder="City" @bind-value="address.City" />
+        </div>
+        <div class="mb-3">
+            <label for="state">State</label>
+            <InputText class="form-control" id="state" placeholder="State" @bind-value="address.State" />
+        </div>
+        <div class="mb-3">
+            <label for="postalcode">Postal Code</label>
+            <InputText class="form-control" id="postalcode" placeholder="Postal Code" @bind-value="address.ZipCode" />
+        </div>
+        <div class="mb-3">
+            <label for="country">Country</label>
+            <InputText class="form-control" id="country" placeholder="Country" @bind-value="address.Country" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+}
+
+@code {
+
+    Address? address = null;
+    bool editAddress = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        address = await AddressService.GetAddress();
+    }
+
+    private void InitAddress()
+    {
+        address = new Address();
+        editAddress = true;
+    }
+    
+    private void EditAddress() => editAddress = true;
+    
+    private async Task SubmitAddress()
+    {
+        editAddress = false;
+
+        address = await AddressService.AddOrUpdateAddress(address);
+    }
+}
