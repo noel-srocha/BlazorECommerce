@@ -1,0 +1,77 @@
+﻿@page "/admin/product/"
+@page "/admin/product/{id:int}"
+@inject IProductService ProductService
+@inject IProductTypeService ProductTypeService
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+
+@if (loading)
+{
+    <span>@msg</span>
+}
+else
+{
+    @if (product.Editing)
+    {
+        <h3>Edit @product.Title</h3>
+    }
+    else if (product.IsNew)
+    {
+        <h3>Create a new Product</h3>
+    }
+    
+    <EditForm Model="product" OnValidSubmit="AddOrUpdateProduct">
+        <DataAnnotationsValidator />
+        <div class="mb-0">
+            <label for="title">Title</label>
+            <InputText id="title" @bind-value="product.Title" class="form-control" />
+        </div>
+        <div class="mb-0">
+            <label for="imageurl">Image URL</label>
+            <InputText id="imageurl" @bind-value="product.ImgUrl" class="form-control" />
+        </div>
+        <div class="mb-0">
+            <img src="@product.ImgUrl" alt="@product.Title" />
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    Product product = new Product();
+    bool loading = false;
+    string btnText = string.Empty;
+    string msg = "Loading...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ProductTypeService.GetProductTypes();
+        await CategoryService.GetAdminCategories();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == 0)
+        {
+            product = new Product();
+            btnText = "Create Product";
+        }
+        else
+        {
+            Product dbProduct = (await ProductService.GetProduct(Id)).Data;
+            if (dbProduct == null)
+            {
+                msg = $"Product with Id '{Id}' doesn't exist!";
+                return;
+            }
+
+            product = dbProduct;
+            product.Editing = true;
+            btnText = "Update Product";
+            
+        }
+
+        loading = false;
+    }
+}
