@@ -188,6 +188,7 @@ public class ProductService : IProductService
 		dbProduct.Visible = product.Visible;
 		dbProduct.ImgUrl = product.ImgUrl;
 		dbProduct.CategoryId = product.CategoryId;
+		dbProduct.Featured = product.Featured;
 
 		foreach (var variant in product.Variants)
 		{
