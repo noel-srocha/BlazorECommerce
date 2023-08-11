@@ -4,6 +4,8 @@ namespace BlazorECommerce.Server.Controllers;
 
 using Microsoft.AspNetCore.Authorization;
 
+[Route("api/[controller]")]
+[ApiController]
 public class PaymentController : ControllerBase
 {
     private readonly IPaymentService _paymentService;

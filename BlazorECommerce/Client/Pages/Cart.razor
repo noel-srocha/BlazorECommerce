@@ -1,5 +1,6 @@
 ﻿@page "/cart"
 @using BlazorECommerce.Shared.DTOs
+@inject IAuthService AuthService
 @inject ICartService CartService
 @inject IOrderService OrderService
 @inject NavigationManager NavigationManager
@@ -43,17 +44,27 @@ else
             Total (@cartProducts.Count): @cartProducts.Sum(product => product.Price * product.Quantity)
         </div>
     </div>
+    @if (isAuthenticated)
+    {
+        <div>
+            <h5>Delivery Address</h5>
+            <AddressForm />
+        </div>
+    }
+    <p></p>
+    
     <button @onclick="PlaceOrder" class="btn alert-success float-end">Checkout</button>
 }
 
 @code {
 
     List<CartProductResponseDTO>? cartProducts;
-
     string message = "Loading Cart...";
+    bool isAuthenticated = false;
 
     protected override async Task OnInitializedAsync()
     {
+        isAuthenticated = await AuthService.IsUserAuthenticated();
         await LoadCart();
     }
 
