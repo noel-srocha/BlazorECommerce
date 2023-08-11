@@ -82,10 +82,13 @@ public class CartService : ICartService
         return new ServiceResponse<int> { Data = count };
     }
     
-    public async Task<ServiceResponse<List<CartProductResponseDTO>>> GetDBCartProducts()
+    public async Task<ServiceResponse<List<CartProductResponseDTO>>> GetDBCartProducts(int? userId = null)
     {
+        if (userId == null)
+            userId = _authService.GetUserId();
+        
         return await GetCartProducts(await _context.CartItems
-            .Where(ci => ci.UserId == _authService.GetUserId())
+            .Where(ci => ci.UserId == userId)
             .ToListAsync()
         );
     }
