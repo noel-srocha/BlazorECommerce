@@ -1,6 +1,6 @@
 # BlazorECommerce
 
-BlazorECommerce is a sample project that demonstrates how to build an e-commerce website using Blazor WebAssembly and ASP.NET Core Web API. It features a product catalog, a shopping cart, a checkout process, and user authentication. Credit to [https://github.com/patrickgod](Patrick God's course) which helped me understand how Blazor works and how to use the best programming practices to better maintain software in general.
+BlazorECommerce is a sample project that demonstrates how to build an e-commerce website using Blazor WebAssembly and ASP.NET Core Web API. It features a product catalog, a shopping cart, a checkout process, and user authentication. Credit to [Patrick God](https://github.com/patrickgod) who helped me understand how Blazor works and how to use the best programming practices to better maintain software in general.
 
 ## Getting Started
 
