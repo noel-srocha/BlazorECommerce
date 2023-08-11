@@ -17,18 +17,15 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
     
-    [HttpPost("register")]
-    public async Task<ActionResult<ServiceResponse<int>>> Register(UserRegister request)
+    [HttpPost("change-password"), Authorize]
+    public async Task<ActionResult<ServiceResponse<bool>>> ChangePassword([FromBody] string newPassword)
     {
-        var response = await _authService.Register(new User
-        { 
-            EmailAddress = request.EmailAddress
-        }, 
-        request.Password);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var response = await _authService.ChangePassword(int.Parse(userId!), newPassword);
 
         if (!response.Success)
-            return BadRequest();
-        
+            return BadRequest(response);
+
         return Ok(response);
     }
 
@@ -42,16 +39,19 @@ public class AuthController : ControllerBase
 
         return Ok(response);
     }
-
-    [HttpPost("change-password"), Authorize]
-    public async Task<ActionResult<ServiceResponse<bool>>> ChangePassword([FromBody] string newPassword)
+    
+    [HttpPost("register")]
+    public async Task<ActionResult<ServiceResponse<int>>> Register(UserRegister request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var response = await _authService.ChangePassword(int.Parse(userId!), newPassword);
+        var response = await _authService.Register(new User
+        { 
+            EmailAddress = request.EmailAddress
+        }, 
+        request.Password);
 
         if (!response.Success)
-            return BadRequest(response);
-
+            return BadRequest();
+        
         return Ok(response);
     }
 }

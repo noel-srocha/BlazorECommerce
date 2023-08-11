@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 
 @inject IAuthService AuthService
+@inject ICartService CartService
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -28,9 +29,9 @@
 </div>
 
 @code {
-    private UserLogin _user = new();
     private string errorMessage = string.Empty;
     private string returnUrl = string.Empty;
+    private UserLogin _user = new();
 
     protected override void OnInitialized()
     {
@@ -50,6 +51,8 @@
             errorMessage = string.Empty;
             await LocalStorage.SetItemAsync("authToken", result.Data);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            await CartService.StoreCartItems(true);
+            await CartService.GetCartItemsCount();
             NavigationManager.NavigateTo(returnUrl);
         }
         else

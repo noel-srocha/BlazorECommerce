@@ -12,35 +12,34 @@ public class AuthService : IAuthService
     private readonly DataContext _context;
     private readonly IConfiguration _configuration;
 
-    public AuthService(DataContext context, IConfiguration configuration)
+    private readonly HttpContextAccessor _httpContextAccessor;
+
+    public AuthService(DataContext context, IConfiguration configuration, HttpContextAccessor httpContextAccessor)
     {
         _context = context;
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
-
-    public async Task<ServiceResponse<int>> Register(User user, string password)
+    
+    public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
     {
-        var userExists = await UserExists(user.EmailAddress);
+        var user = await _context.Users.FindAsync(userId);
         
-        if (userExists)
-            return new ServiceResponse<int>() { Success = false, Message = "User already exists" };
+        if (user == null)
+            return new ServiceResponse<bool> { Success = false, Message = "User not found." };
         
-        CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
+        CreatePasswordHash(newPassword, out var passwordHash, out var passwordSalt);
         
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
 
-        _context.Users.Add(user);
         await _context.SaveChangesAsync();
         
-        return new ServiceResponse<int>() { Data = user.Id, Message = "User created successfully" };
+        return new ServiceResponse<bool> { Data = true, Message = "Password changed successfully." };
     }
-    public async Task<bool> UserExists(string emailAddress)
-    {
-        var emailExists = await _context.Users.AnyAsync(x => x.EmailAddress.ToLower().Equals(emailAddress.ToLower()));
-
-        return emailExists;
-    }
+    
+    public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    
     public async Task<ServiceResponse<string>> Login(string emailAddress, string password)
     {
         var response = new ServiceResponse<string>();
@@ -66,36 +65,36 @@ public class AuthService : IAuthService
         return response;
     }
     
-    public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
+    public async Task<ServiceResponse<int>> Register(User user, string password)
     {
-        var user = await _context.Users.FindAsync(userId);
+        var userExists = await UserExists(user.EmailAddress);
         
-        if (user == null)
-            return new ServiceResponse<bool> { Success = false, Message = "User not found." };
+        if (userExists)
+            return new ServiceResponse<int>() { Success = false, Message = "User already exists" };
         
-        CreatePasswordHash(newPassword, out var passwordHash, out var passwordSalt);
+        CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
         
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
 
+        _context.Users.Add(user);
         await _context.SaveChangesAsync();
         
-        return new ServiceResponse<bool> { Data = true, Message = "Password changed successfully." };
+        return new ServiceResponse<int>() { Data = user.Id, Message = "User created successfully" };
     }
+    
+    public async Task<bool> UserExists(string emailAddress)
+    {
+        var emailExists = await _context.Users.AnyAsync(x => x.EmailAddress.ToLower().Equals(emailAddress.ToLower()));
 
+        return emailExists;
+    }
+    
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512();
         passwordSalt = hmac.Key;
         passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-    }
-
-    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-    {
-        using var hmac = new HMACSHA512(passwordSalt);
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-        
-        return computedHash.SequenceEqual(passwordHash);
     }
 
     private string CreateToken(User user)
@@ -120,5 +119,13 @@ public class AuthService : IAuthService
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
         return jwt;
+    }
+    
+    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    {
+        using var hmac = new HMACSHA512(passwordSalt);
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        
+        return computedHash.SequenceEqual(passwordHash);
     }
 }

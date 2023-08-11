@@ -47,9 +47,9 @@ else
 }
 
 @code {
-    private Product? _product;
-    private string _message = string.Empty;
     private int _currentTypeId = 1;
+    private string _message = string.Empty;
+    private Product? _product;
     
     [Parameter]
     public int Id { get; set; }
@@ -72,13 +72,6 @@ else
         
     }
     
-    private ProductVariant GetSelectedVariant()
-    {
-        var variant = _product!.Variants.FirstOrDefault(v => v.ProductTypeId == _currentTypeId);
-
-        return variant!;
-    }
-
     private async Task AddToCart()
     {
         var productVariant = GetSelectedVariant();
@@ -89,5 +82,12 @@ else
         };
 
         await CartService.AddToCart(cartItem);
+    }
+    
+    private ProductVariant GetSelectedVariant()
+    {
+        var variant = _product!.Variants.FirstOrDefault(v => v.ProductTypeId == _currentTypeId);
+
+        return variant!;
     }
 }

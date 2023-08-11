@@ -1,3 +1,4 @@
+global using System.Security.Claims;
 global using Microsoft.EntityFrameworkCore;
 global using BlazorECommerce.Shared;
 global using BlazorECommerce.Server.Data;
@@ -5,6 +6,8 @@ global using BlazorECommerce.Server.Services.ProductService;
 global using BlazorECommerce.Server.Services.CategoryService;
 global using BlazorECommerce.Server.Services.CartService;
 global using BlazorECommerce.Server.Services.AuthService;
+global using BlazorECommerce.Server.Services.OrderService;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -27,6 +30,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -39,6 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
     });
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
