@@ -2,6 +2,7 @@
 
 namespace BlazorECommerce.Server.Controllers;
 
+using Microsoft.AspNetCore.Authorization;
 using Shared.DTOs;
 
 [Route("api/[controller]")]
@@ -13,6 +14,30 @@ public class ProductController : ControllerBase
     public ProductController(IProductService productService)
     {
 	    _productService = productService;
+    }
+    
+    [HttpPost("admin"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ServiceResponse<Product>>> CreateProduct(Product product)
+    {
+	    var result = await _productService.CreateProduct(product);
+	      
+	    return Ok(result);
+    }
+    
+    [HttpDelete("admin"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteProduct(int productId)
+    {
+	    var result = await _productService.DeleteProduct(productId);
+	      
+	    return Ok(result);
+    }
+    
+    [HttpGet("admin"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProducts()
+    {
+	    var result = await _productService.GetAdminProducts();
+	      
+	    return Ok(result);
     }
     
     [HttpGet("featured")]
@@ -60,6 +85,14 @@ public class ProductController : ControllerBase
     {
 	    var result = await _productService.SearchProducts(searchText, page);
 
+	    return Ok(result);
+    }
+    
+    [HttpPut("admin"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ServiceResponse<Product>>> UpdateProduct(Product product)
+    {
+	    var result = await _productService.UpdateProduct(product);
+	      
 	    return Ok(result);
     }
 }

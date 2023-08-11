@@ -16,7 +16,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Shared\BlazorECommerce.Shared.csproj" />
+
     </ItemGroup>
+
 
 
 
